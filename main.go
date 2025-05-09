@@ -9,8 +9,8 @@ import (
     "github.com/gorilla/websocket"
 )
 
-var clients = make(map[*websocket.Conn]bool) // связанные клиенты
-var broadcast = make(chan Message)           // канал для широковещательной рассылки сообщений
+var clients = make(map[*websocket.Conn]bool)
+var broadcast = make(chan Message)
 
 var upgrader = websocket.Upgrader{
     CheckOrigin: func(r *http.Request) bool {
@@ -51,7 +51,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
         var msg Message
         err := ws.ReadJSON(&msg)
         if err != nil {
-            delete(clients, ws) // удаление клиента при разрыве соединения
+            delete(clients, ws)
             break
         }
         broadcast <- msg
