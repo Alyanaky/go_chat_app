@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="chat-container">
+        <ul id="messages"></ul>
+        <form id="message-form" action="">
+            <input type="text" id="username" placeholder="Username">
+            <input type="text" id="messageText" autocomplete="off" placeholder="Type your message here...">
+            <button>Send</button>
+        </form>
+    </div>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('messageText');
+        const messages = document.getElementById('messages');
+        const usernameInput = document.getElementById('username');
+
+        const ws = new WebSocket('ws://' + location.host + '/ws');
+
+        ws.onmessage = (event) => {
+            const msgData = JSON.parse(event.data);
+            messages.innerHTML += `<li><strong>${msgData.Username}:</strong> ${msgData.Message}</li>`;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+
+        messageForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (!messageInput.value) return;
+
+            ws.send(JSON.stringify({
+                Username: usernameInput.value,
+                Message: messageInput.value
+            }));
+
+            messageInput.value = '';
+        });
+    </script>
+</body>
+</html>
